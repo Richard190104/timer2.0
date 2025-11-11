@@ -76,9 +76,11 @@
     <taskComponent />
 
     <playMusic />
+    <div class="q-pa-md q-gutter-sm">
     <q-btn @click="displayWheel = true" label="Spin the Wheel" color="primary" />
-    <spinWheel v-model="displayWheel"/>
+    </div>
 
+    <spinWheel v-model="displayWheel"/>
     </q-drawer>
 
     <q-page-container>
