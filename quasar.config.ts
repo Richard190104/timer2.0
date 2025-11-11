@@ -35,6 +35,7 @@ export default defineConfig((/* ctx */) => {
       target: {
         browser: ['es2022', 'firefox115', 'chrome115', 'safari14'],
         node: 'node20',
+        publicPath: '/timer2.0/',
       },
 
       typescript: {
