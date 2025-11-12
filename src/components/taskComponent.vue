@@ -83,13 +83,20 @@ export default defineComponent({
                 body: JSON.stringify({ value: this.response }),
             });
 
-            if (resp.ok) {
-                alert(`Dobre tyyyyyyyyyyy`);
+            if (!resp.ok) {
+                console.error('Server responded with status:', resp.status);
+                return;
+            }
+
+            const data = await resp.json();
+            console.log('Response data:', data);
+            if (data && data.correct) {
+                alert('Dobre tyyyyyyyyyyy');
                 this.displayed = false;
                 this.response = 0;
-                await this.getTask(); 
+                await this.getTask();
             } else {
-                alert(`Nespravna odpoved. Skus znova.`);
+                alert('Asi nedobre mas cujes');
             }
         } catch (error) {
             console.error('Fetch error:', error);
