@@ -1,11 +1,14 @@
 <template>
   <q-page class="row items-center justify-evenly bg-black">
     <div class="column items-center q-pa-lg q-gutter-md text-center">
-  <div class="row justify-center q-gutter-md text-h1 text-weight-bold text-primary">
+  <div v-if="!displayAnswer" class="row justify-center q-gutter-md text-h1 text-weight-bold text-primary">
     <div>{{ timeLeft.days }}<span class="text-subtitle1 text-white"> days</span></div>
     <div>{{ timeLeft.hours }}<span class="text-subtitle1 text-white"> hours</span></div>
     <div>{{ timeLeft.minutes }}<span class="text-subtitle1 text-white"> minutes</span></div>
     <div>{{ timeLeft.seconds }}<span class="text-subtitle1 text-white"> seconds</span></div>
+  </div>
+  <div v-else class="row justify-center q-gutter-md text-h1 text-weight-bold text-primary">
+    <div><span class="text-h2 text-primary"> {{ answer }}</span></div>
   </div>
 </div>
   </q-page>
@@ -29,6 +32,8 @@ export default defineComponent({
     return {
       timeLeft,
       intervalId: null as unknown as number,
+      displayAnswer: false,
+      answer: '',
     };
   },
   methods: {
@@ -44,6 +49,10 @@ export default defineComponent({
           minutes: data.minutes,
           seconds: data.seconds,
         }
+      }
+      else{
+        this.displayAnswer = true
+        this.answer = data.message
       }
     } catch (error) {
       console.error('Fetch error:', error)

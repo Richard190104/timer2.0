@@ -53,7 +53,8 @@
 
     <div class="q-pa-md q-gutter-sm">
       <q-btn
-        @click="showShop = true" label="Shop" color="primary"
+        @click="showShop = true; fetchCredits()" label="Shop" color="primary"
+       
       />
 
       <q-dialog v-model="showShop" :backdrop-filter="backdropFilter">
@@ -146,5 +147,6 @@ export default defineComponent({
   mounted() {
     void this.fetchCredits();
   },
+  
 });
 </script>

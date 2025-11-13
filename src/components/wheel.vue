@@ -26,8 +26,11 @@
         </div>
 
         <!-- Free spins -->
-        <div class="text-subtitle1 q-mt-md">
+        <div v-if="freeSpins > 0" class="text-subtitle1 q-mt-md">
           Free Spins: {{ freeSpins }}
+        </div>
+        <div v-else-if="!spinning" class="text-subtitle1 q-mt-md">
+          Kredity: {{ credits }}
         </div>
 
         <!-- User chooses spin price -->
@@ -97,7 +100,7 @@ export default defineComponent({
     const currentRotation = ref(0)
     const freeSpins = ref(0)
     const price = ref(1)
-
+    const credits = ref(0)
     // 🧭 Helper functions
     function describeArc(x: number, y: number, radius: number, startAngle: number, endAngle: number) {
       const start = polarToCartesian(x, y, radius, endAngle)
@@ -116,6 +119,17 @@ export default defineComponent({
       return {
         x: cx + r * Math.cos(rad),
         y: cy + r * Math.sin(rad),
+      }
+    }
+
+    async function fetchCredits() {
+      try {
+        const response = await fetch('https://timer-backend-24n3.vercel.app/api/getCredits')
+        const data = await response.json()
+        credits.value = data.message ?? 0
+      } catch (error) {
+        console.error('Fetch error:', error)
+        credits.value = 0
       }
     }
 
@@ -153,6 +167,7 @@ export default defineComponent({
 
         // Aktualizuj freeSpins z backendu
         freeSpins.value = data.freeSpins ?? freeSpins.value
+        credits.value = data.credits ?? credits.value
         isWin.value = data.win
 
         const degPerSegment = 360 / segments.length
@@ -207,6 +222,7 @@ export default defineComponent({
     // 🔄 Load free spins on mount
     onMounted(() => {
       void getFreeSpins()
+      void fetchCredits()
     })
 
     return {
@@ -221,6 +237,8 @@ export default defineComponent({
       freeSpins,
       getFreeSpins,
       price,
+      credits,
+      fetchCredits
     }
   },
 })
