@@ -38,9 +38,7 @@
             <div class="text-center">
               <div class="text-h6 q-mb-md">Gamesy</div>
             <q-icon name="games" color="primary" size="56px" class="q-mb-md" />
-              <div class="text-center">
-                <div class="text-h6 q-mb-md">HRY ESTE NEFUNGUJU</div>
-              </div>
+             
               <div class="q-gutter-sm">
                 <q-btn v-for="game in gamesList" :key="game.id" :label="game.title" @click="openGame(game)" color="secondary" class="full-width"/>
               </div>
@@ -81,7 +79,7 @@
     <q-btn @click="displayWheel = true" label="Spin the Wheel" color="primary" />
     </div>
 
-    <spinWheel v-model="displayWheel"/>
+    <spinWheel v-model="displayWheel" />
     </q-drawer>
 
     <q-page-container>
@@ -144,8 +142,8 @@ export default defineComponent({
       await this.$router.push(`/${game.script}`)
       this.displayInfo = false 
       this.leftDrawerOpen = false 
-    }
-
+    },
+   
   },
   mounted() {
     void this.fetchCredits();

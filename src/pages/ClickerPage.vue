@@ -106,7 +106,13 @@ export default defineComponent({
           isNewBest.value = false
         } else {
           isNewBest.value = !!data.isNewBest
-          minimumScore.value = data.previousBest ?? minimumScore.value
+          if (!isNewBest.value){
+              minimumScore.value = data.previousBest ?? minimumScore.value
+
+          }
+          else{
+              minimumScore.value = score.value
+          }
         }
       } catch (err) {
         console.error('Chyba pri odosielaní:', err)

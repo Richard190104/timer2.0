@@ -1,5 +1,7 @@
 <template>
-  <q-dialog>
+  <q-dialog   :model-value="modelValue"
+  @update:model-value="$emit('update:modelValue', $event)"
+>
     <div class="q-pa-md flex flex-center column bg-blue-grey-10">
       <q-card class="q-pa-lg flex flex-center column bg-black text-white">
         <div class="text-h5 text-center q-mb-md">Točka</div>
@@ -73,12 +75,19 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue'
+import { defineComponent, ref, onMounted, watch  } from 'vue'
 
 export default defineComponent({
   name: 'SpinWheel',
+ props: {
+    modelValue: {
+      type: Boolean,
+      required: true
+    }
+  },
 
-  setup() {
+  emits: ['update:modelValue'],
+  setup(props) {
     // 🧩 Data
     const segments = [
       { color: '#e53935', value: 0 }, // red
@@ -219,11 +228,22 @@ export default defineComponent({
       }
     }
 
-    // 🔄 Load free spins on mount
     onMounted(() => {
       void getFreeSpins()
       void fetchCredits()
     })
+    
+     watch(
+      () => props.modelValue,
+      async (isOpen) => {
+        if (isOpen) {
+          await getFreeSpins()
+          await fetchCredits()
+        }
+      }
+    ) 
+
+
 
     return {
       segments,
