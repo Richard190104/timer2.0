@@ -26,3 +26,8 @@ export interface Task {
   completed: boolean;
   testCredits: number;
 }
+
+export interface click{
+  score: number;
+  timeLeft: number;
+}

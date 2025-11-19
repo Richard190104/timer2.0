@@ -42,7 +42,7 @@
                 <div class="text-h6 q-mb-md">HRY ESTE NEFUNGUJU</div>
               </div>
               <div class="q-gutter-sm">
-                <q-btn v-for="game in gamesList" :key="game.id" :label="game.title" color="secondary" class="full-width"/>
+                <q-btn v-for="game in gamesList" :key="game.id" :label="game.title" @click="openGame(game)" color="secondary" class="full-width"/>
               </div>
             </div>
           </q-carousel-slide>
@@ -98,10 +98,7 @@ import taskComponent from 'src/components/taskComponent.vue';
 import playMusic from 'src/components/playMusic.vue';
 import spinWheel from 'src/components/wheel.vue';
 const gamesList: Game[] = [
-    { id: 1, title: 'Dino Runner', script: 'dinoRunner' },
-    { id: 2, title: 'Clicker', script: 'clicker' },
-    { id: 3, title: 'Cannon Shooter', script: 'cannonShooter' },
-    { id: 4, title: 'Quiz', script: 'quiz' },
+    { id: 1, title: 'Clicker', script: 'clicker' },
   ];
 
   const infoText = "O nvmkolkocasu tam pise sa ti zobrazi co znamena KJNTSSNP. Zahraj si daco kym cakas (dole slider) sak doraz to bude. Raz za cas pridam daco. Tieto co tam su teraz su fixne, tie dohravat nemusis to len kym cakas nech sa nenudis. Also raz za cas (ked budem stihat) budem pridavat dajaky fun text alebo info alebo ulohy takze dojdi sa pozriet. Za ulohy mozes dostat kredity, tie potom mozes minat. Tie su v side bare. ENJOY :D"
@@ -143,6 +140,12 @@ export default defineComponent({
         console.error('Fetch error:', error);
       }
     },
+    async openGame(game: Game) {
+      await this.$router.push(`/${game.script}`)
+      this.displayInfo = false 
+      this.leftDrawerOpen = false 
+    }
+
   },
   mounted() {
     void this.fetchCredits();
