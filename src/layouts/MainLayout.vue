@@ -221,11 +221,9 @@ changebg(bg: {link: string, color: string}) {
       const savedBg = localStorage.getItem('selectedBackground')
       if (savedBg) {
         try {
-          // Try to parse as JSON object
           const bgObj = JSON.parse(savedBg)
           this.changebg(bgObj)
         } catch {
-          // If it fails, assume it's the old string format
           if (savedBg === 'black') {
             this.changebg({ link: 'black', color: 'black' })
           }
