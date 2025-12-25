@@ -1,32 +1,52 @@
 <template>
+  <div class="text-center">
+    <q-btn @click="field = field === 0 ? 1 : 0">Dalej</q-btn>
+  </div>
   <q-list bordered separator>
-    <q-item v-for="item in avbItems" :key="item.id">
-      
-      <q-item-section>
-        <q-item-label>{{ item.title }}</q-item-label>
-      </q-item-section>
+    <div v-if="field == 0">
+      <q-item v-for="item in avbItems" :key="item.id">
+        <q-item-section>
+          <q-item-label>{{ item.title }}</q-item-label>
+        </q-item-section>
 
-      <q-item-section side>
-        <q-item-label caption>{{ item.price }} Kreditov</q-item-label>
-      </q-item-section>
+        <q-item-section side>
+          <q-item-label caption>{{ item.price }} Kreditov</q-item-label>
+        </q-item-section>
 
-      <q-item-section side>
-        <q-input
-          v-model.number="item.choosenAmount"
-          type="number"
-          label="Koľko chceš kúpiť"
-          outlined
-          dense
-          min="1"
-          max="100"
-          style="width: 100px;"
-        />
-      </q-item-section>
-      <q-item-section class="q-pa-md">
-        <q-btn @click="buyItem(item)" class="bg-primary text-white">Kúpiť</q-btn>
-      </q-item-section>
+        <q-item-section side>
+          <q-input
+            v-model.number="item.choosenAmount"
+            type="number"
+            label="Koľko chceš kúpiť"
+            outlined
+            dense
+            min="1"
+            max="100"
+            style="width: 100px;"
+          />
+        </q-item-section>
+        <q-item-section class="q-pa-md">
+          <q-btn @click="buyItem(item)" class="bg-primary text-white">Kúpiť</q-btn>
+        </q-item-section>
+      </q-item>
+    </div>
 
-    </q-item>
+    <div v-if="field == 1" class="q-pa-md">
+      <b>Pozadia si tu mozes kupit</b>
+      <q-item v-for="item in avbBackgrounds" :key="item.id">
+        <q-item-section>
+          <q-item-label>{{ item.title }}</q-item-label>
+        </q-item-section>
+
+        <q-item-section side>
+          <q-item-label caption>{{ item.price }} Kreditov</q-item-label>
+        </q-item-section>
+
+        <q-item-section class="q-pa-md">
+          <q-btn @click="buyItem(item)" class="bg-primary text-white">Kúpiť</q-btn>
+        </q-item-section>
+      </q-item>
+    </div>
   </q-list>
 </template>
 
@@ -39,6 +59,11 @@ import type { ShopItem } from './models';
     { id: 'eat', title: 'Eat', price: 8, choosenAmount: 0 },
     { id: 'ride_ba', title: 'Odvoz po BA - 1KM - 1 kredit', price: 1, choosenAmount: 0 },
   ];
+  const avbBackgrounds: ShopItem[] = [
+    { id: 'bg1', title: 'Danik na stvorkolke', price: 0.1, choosenAmount: 1 },
+    { id: 'bg2', title: 'China', price: 1.2, choosenAmount: 1 },
+    { id: 'bg3', title: 'Stranger things', price: 5.0, choosenAmount: 1 },
+  ];
 export default defineComponent({
   name: 'IndexPage',
   emits: ['refreshCredits'],
@@ -49,10 +74,13 @@ export default defineComponent({
     return {
       avbItems,
       quantity: 0,
+      field: 0,
+      avbBackgrounds
     };
   },
   methods: {
     async buyItem(item: ShopItem) {
+      console.log(avbBackgrounds)
       if (item.choosenAmount > 0 && item.choosenAmount <= 100) {
         const totalPrice = item.price * item.choosenAmount;
          const resp = await fetch('https://timer-backend-24n3.vercel.app/api/order', {
@@ -67,7 +95,12 @@ export default defineComponent({
         } else {
           alert('Isto mas dost kreditov? (Len tipujem error lebo som to nekontroloval uz)');
         }
-        item.choosenAmount = 0;
+        if (item.id.startsWith('bg')) {
+          //sada
+        }
+        else{
+          item.choosenAmount = 0;
+        }
       } else {
         alert('Kolko chces kupit wtf?');
       }

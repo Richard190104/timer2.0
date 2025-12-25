@@ -79,12 +79,45 @@
     <q-btn @click="displayWheel = true" label="Spin the Wheel" color="primary" />
     </div>
 
-    <spinWheel v-model="displayWheel" />
+      <spinWheel v-model="displayWheel" />
+
+    <div class="q-pa-md q-gutter-sm">
+      <q-btn @click="displayCanvas = true" label="Nakresli si obrazok" color="primary" />
+    </div>
+      <canvasComponent v-model="displayCanvas" />
+    <div class="q-pa-md q-gutter-sm">
+       <q-btn
+        @click="displaybgChange = true; getAvailableBackgrounds()" label="Zmena pozadia" color="primary"
+       
+      />
+      <q-dialog v-model="displaybgChange" >
+         <q-card>
+            <q-card-section class="column items-center q-pb-none text-h6">
+            Tu si zmenis pozadie ktore si kupujes v shope
+
+            <div v-if="ownedBG.length === 0">
+              Nemáš žiadne pozadia :(
+            </div>
+            <div v-else class="row wrap gap q-mt-md">
+              <q-btn 
+              v-for="bg in ownedBG" 
+              :key="bg.link" 
+              class="bg-item" 
+              style="width: 150px; height: 150px; min-width: 150px; min-height: 150px; background-color: black;"
+              :style="{ backgroundImage: `url('${bg.link}')`, backgroundSize: 'cover', backgroundPosition: 'center' }"
+              @click="changebg(bg); displaybgChange = false;"
+              />
+            </div>
+            </q-card-section>
+          
+        </q-card>
+      </q-dialog>
+    </div>
     </q-drawer>
 
-    <q-page-container>
-      <router-view />
-    </q-page-container>
+  <q-page-container ref="pageContainer">
+    <router-view />
+  </q-page-container>
   </q-layout>
 </template>
 
@@ -95,6 +128,8 @@ import shopIOverlay from 'src/components/shopIOverlay.vue';
 import taskComponent from 'src/components/taskComponent.vue';
 import playMusic from 'src/components/playMusic.vue';
 import spinWheel from 'src/components/wheel.vue';
+import canvasComponent from 'src/components/canvas.vue';
+
 const gamesList: Game[] = [
     { id: 1, title: 'Clicker', script: 'clicker' },
   ];
@@ -109,6 +144,7 @@ export default defineComponent({
   taskComponent,
   playMusic,
   spinWheel,
+  canvasComponent,
   },
 
   data() {
@@ -122,6 +158,9 @@ export default defineComponent({
       backdropFilter: 'blur(4px)',
       credits: 0,
       displayWheel: false,
+      displayCanvas: false,
+      displaybgChange: false,
+      ownedBG: [] as {link: string, color: string}[],
     };
   },
 
@@ -131,6 +170,7 @@ export default defineComponent({
     },
     async fetchCredits() {
       try {
+        console.log(this.ownedBG)
         const response = await fetch('https://timer-backend-24n3.vercel.app/api/getCredits');
         const data = await response.json();
         this.credits = data.message || 0;
@@ -143,10 +183,55 @@ export default defineComponent({
       this.displayInfo = false 
       this.leftDrawerOpen = false 
     },
-   
+    getAvailableBackgrounds() {
+      const storedBG = localStorage.getItem('backgrounds');
+      if (storedBG) {
+        this.ownedBG = JSON.parse(storedBG);
+      }
+    },
+changebg(bg: {link: string, color: string}) {
+  const page = document.querySelector('.q-page') as HTMLElement
+  const wholePage = document.querySelector('#q-app') as HTMLElement
+  if (bg.link === 'black') {
+    if (!page) return
+
+    page.classList.add('bg-black')
+    page.style.removeProperty('background')
+    wholePage.style.setProperty('--q-primary', "gray", 'important')
+
+    localStorage.setItem('selectedBackground', 'black')
+    return
+  }
+
+  if (!page) return
+  page.style.imageRendering = 'crisp-edges'
+  page.classList.remove('bg-black')
+  page.style.setProperty('background-color', 'black', 'important')
+  page.style.setProperty('background', `black url('${bg.link}') center/cover no-repeat`, 'important')
+  wholePage.style.setProperty('--q-primary', bg.color, 'important')
+
+
+  localStorage.setItem('selectedBackground', JSON.stringify(bg))
+}
   },
   mounted() {
-    void this.fetchCredits();
+      void this.getAvailableBackgrounds()
+      void this.fetchCredits()
+
+      const savedBg = localStorage.getItem('selectedBackground')
+      if (savedBg) {
+        try {
+          // Try to parse as JSON object
+          const bgObj = JSON.parse(savedBg)
+          this.changebg(bgObj)
+        } catch {
+          // If it fails, assume it's the old string format
+          if (savedBg === 'black') {
+            this.changebg({ link: 'black', color: 'black' })
+          }
+        }
+      
+      }
   },
   
 });

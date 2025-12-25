@@ -11,6 +11,7 @@
     <div><span class="text-h2 text-primary"> {{ answer }}</span></div>
   </div>
 </div>
+
   </q-page>
 </template>
 
@@ -41,7 +42,6 @@ export default defineComponent({
       try {
       const response = await fetch('https://timer-backend-24n3.vercel.app/api/hello')
       const data = await response.json()
-
       if (data.access === 'denied') {
         this.timeLeft = {
           days: data.days,
@@ -54,6 +54,7 @@ export default defineComponent({
         this.displayAnswer = true
         this.answer = data.message
       }
+      localStorage.setItem('backgrounds', JSON.stringify(data.backgrounds))
     } catch (error) {
       console.error('Fetch error:', error)
     }
